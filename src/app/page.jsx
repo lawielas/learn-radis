@@ -1,7 +1,12 @@
 import Link from 'next/link'
+import { client } from '@/lib/db'
 
 const getBooks = async () => {
-  
+  const results = await client.zRangeWithScores('books', 0, -1)
+
+  const books = await Promise.all(results.map((b) => {
+    return client.hGetAll(`books:${b.score}`)
+  }))
 }
 
 export default async function Home() {
